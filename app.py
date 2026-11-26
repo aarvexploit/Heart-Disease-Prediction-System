@@ -16,7 +16,7 @@ tree_model = artifacts["tree_model"]
 scaler = artifacts["scaler"]
 feature_columns = artifacts["feature_columns"]
 
-# Top feature importances from Decision Tree evaluation
+
 top_importances = pd.Series(
     {
         "exang": 0.438,
@@ -32,7 +32,7 @@ top_importances = pd.Series(
 st.title("Heart Disease Prediction")
 st.caption("Compare Logistic Regression and Decision Tree predictions on patient inputs")
 
-# Sidebar with top feature importances
+
 with st.sidebar:
     st.header("Top Decision Tree Features")
     st.bar_chart(top_importances)
