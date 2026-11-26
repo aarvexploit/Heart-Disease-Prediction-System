@@ -16,7 +16,7 @@ heart-disease-prediction-system/
 │   └── clean_data.csv       # Preprocessed and imputed dataset ready for modeling
 ├── models/
 │   └── heart_models.pkl     # Serialized Logistic Regression, Decision Tree, scaler, and feature metadata
-├── evaluation/
+├── evaluations/
 │   ├── confusion_matrices.png
 │   ├── roc_curve.png
 │   └── log_reg_coefficients.png
@@ -52,13 +52,13 @@ The dataset was split using an **80/20 stratified train-test split** (`random_st
 ### Evaluation Visualizations
 
 #### Confusion Matrices
-![Confusion Matrices](evaluation/confusion_matrices.png)
+![Confusion Matrices](evaluations/confusion_matrices.png)
 
 #### ROC Curve Comparison
-![ROC Curve](evaluation/roc_curve.png)
+![ROC Curve](evaluations/roc_curve.png)
 
 #### Logistic Regression Feature Effects
-![Logistic Regression Coefficients](evaluation/log_reg_coefficients.png)
+![Logistic Regression Coefficients](evaluations/log_reg_coefficients.png)
 
 ## Local Setup & Usage
 
