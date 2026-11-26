@@ -64,8 +64,8 @@ The dataset was split using an **80/20 stratified train-test split** (`random_st
 
 1. **Clone the repository:**
    ```bash
-   git clone <your-repository-url>
-   cd <repository-folder>
+   git clone https://github.com/aarvexploit/Heart-Disease-Prediction-System.git
+   cd Heart-Disease-Prediction-System
    ```
 
 2. **Create and activate a virtual environment (optional):**
