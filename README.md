@@ -21,10 +21,10 @@ heart-disease-prediction-system/
 │   ├── roc_curve.png
 │   └── log_reg_coefficients.png
 └── notebook/
-    ├── 01_eda.ipynb                  # Exploratory data analysis and missing value inspection
-    ├── 02_data_cleaning.ipynb        # Target creation, zero handling, and missing value imputation
-    ├── 03_model_training.ipynb       # Encoding, scaling, train-test split, and model training
-    └── 04_model_evaluation.ipynb     # Performance comparison, ROC curves, and feature importance
+    ├── data_evaluation.ipynb                  # Exploratory data analysis and missing value inspection
+    ├── clean_data.ipynb        # Target creation, zero handling, and missing value imputation
+    ├── encoding_data_and_model_training.ipynb       # Encoding, scaling, train-test split, and model training
+    └── model_evaluation.ipynb     # Performance comparison, ROC curves, and feature importance
 ```
 
 ## Dataset & Preprocessing
