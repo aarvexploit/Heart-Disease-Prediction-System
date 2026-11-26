@@ -1,34 +1,91 @@
 # Heart Disease Prediction System
 
-An end-to-end machine learning pipeline for predicting heart disease presence from clinical patient records using the multi-center **UCI Heart Disease dataset** (`Cleveland`, `Hungary`, `VA Long Beach`, and `Switzerland`).
+An end-to-end machine learning pipeline and interactive web application that predicts the presence of heart disease based on patient clinical parameters. The project compares **Logistic Regression** and **Decision Tree** classifiers and is deployed on Streamlit Cloud.
 
-## Overview
-Clinical datasets often contain disguised missing values, cross-hospital distribution shifts, and asymmetric error costs where false negatives are far riskier than false positives. This project builds a reproducible, leak-free ML workflow focused on:
-- **Clinical Data Hygiene:** Distinguishing valid zero measurements (`oldpeak`, `ca`, `fbs == False`, `exang == False`, `num == 0`) from clinically impossible zeros (`chol == 0`, `trestbps == 0`) treated as missing values (`NaN`).
-- **Leak-Free Preprocessing:** Fitting imputers, scalers, and encoders strictly inside `StratifiedKFold` cross-validation pipelines.
-- **Screening-Focused Evaluation:** Optimizing for **ROC-AUC**, **Recall**, and **F2-score** with custom decision threshold tuning rather than relying solely on raw accuracy.
-- **Model Explainability:** Using **SHAP** to surface which clinical features drive individual risk predictions.
-
-## Dataset Summary
-- **Source:** UCI Machine Learning Repository (`heart_disease_uci.csv`).
-- **Records:** 920 patient observations across 4 clinical cohorts (`Cleveland`, `Hungary`, `VA Long Beach`, `Switzerland`).
-- **Features:** Age (`age`), sex (`sex`), chest pain type (`cp`), resting blood pressure (`trestbps`), serum cholesterol (`chol`), fasting blood sugar (`fbs`), resting ECG (`restecg`), max heart rate (`thalch`), exercise-induced angina (`exang`), ST depression (`oldpeak`), ST slope (`slope`), fluoroscopy vessel count (`ca`), and thalassemia (`thal`).
-- **Target (`num`):** Original angiographic disease status (`0` = absence, `1–4` = severity levels), modeled as binary classification (`0` vs. `> 0`) or multi-class severity.
+**Live Application:** [Heart Disease Prediction System on Streamlit Cloud](https://heart-disease-prediction-system-3kkfywr3xuappbw6u2sh9zd.streamlit.app/)
 
 ## Project Structure
-```text
-heart-disease-prediction/
+
+```
+heart-disease-prediction-system/
+├── app.py                   # Streamlit web application for real-time predictions
+├── requirements.txt         # Python dependencies required to run the project
+├── README.md                # Project documentation
 ├── data/
-│   └── raw/                 # Original UCI dataset (read-only)
-├── notebooks/               # Exploratory data analysis & experiments
-├── src/
-│   ├── __init__.py
-│   ├── data.py              # Data loading & clinical cleaning rules
-│   ├── features.py          # Preprocessing & feature engineering pipelines
-│   ├── train.py             # Stratified CV & model training
-│   └── evaluate.py          # Metrics, threshold analysis & SHAP plots
-├── artifacts/               # Saved model pipelines
-├── .gitignore
-├── LICENSE
-├── requirements.txt
-└── README.md
+│   ├── raw_data.csv         # Original UCI Heart Disease dataset (920 rows × 16 columns)
+│   └── clean_data.csv       # Preprocessed and imputed dataset ready for modeling
+├── models/
+│   └── heart_models.pkl     # Serialized Logistic Regression, Decision Tree, scaler, and feature metadata
+├── evaluation/
+│   ├── confusion_matrices.png
+│   ├── roc_curve.png
+│   └── log_reg_coefficients.png
+└── notebook/
+    ├── 01_eda.ipynb                  # Exploratory data analysis and missing value inspection
+    ├── 02_data_cleaning.ipynb        # Target creation, zero handling, and missing value imputation
+    ├── 03_model_training.ipynb       # Encoding, scaling, train-test split, and model training
+    └── 04_model_evaluation.ipynb     # Performance comparison, ROC curves, and feature importance
+```
+
+## Dataset & Preprocessing
+
+* **Source Dataset (`data/raw_data.csv`):** Contains 920 patient records across 16 clinical attributes.
+* **Target Variable:** Binarized `num` into `target` (`0` = No Heart Disease, `1` = Heart Disease Present).
+* **Feature Cleaning (`data/clean_data.csv`):**
+  * Dropped non-predictive identifiers and high-missingness columns (`id`, `dataset`, `num`, `ca`, `thal`).
+  * Replaced biologically invalid `0` values in `chol` (serum cholesterol) and `trestbps` (resting blood pressure) with `NaN`.
+  * Imputed numeric features (`trestbps`, `chol`, `thalch`, `oldpeak`) using column medians.
+  * Imputed categorical/boolean features (`fbs`, `restecg`, `exang`) using column modes, and filled missing `slope` entries with `'unknown'`.
+  * Applied binary mapping for `sex` and one-hot encoding (`drop_first=True`) for `cp`, `restecg`, and `slope`.
+
+## Model Training & Evaluation
+
+The dataset was split using an **80/20 stratified train-test split** (`random_state=42`). Features were standardized with `StandardScaler` (fit strictly on the training set) for Logistic Regression, while the Decision Tree (`max_depth=4`) was trained on unscaled features.
+
+| Model | Test Accuracy | Precision | Recall | ROC AUC |
+| :--- | :---: | :---: | :---: | :---: |
+| **Logistic Regression** | **82.61%** | **83.02%** | **86.27%** | **0.8886** |
+| **Decision Tree** (`max_depth=4`) | 78.26% | 79.81% | 81.37% | 0.8588 |
+
+* **Top Predictive Features:** Exercise-induced angina (`exang`), chest pain type (`cp`), sex, age, maximum heart rate achieved (`thalch`), and ST depression (`oldpeak`).
+
+### Evaluation Visualizations
+
+#### Confusion Matrices
+![Confusion Matrices](evaluation/confusion_matrices.png)
+
+#### ROC Curve Comparison
+![ROC Curve](evaluation/roc_curve.png)
+
+#### Logistic Regression Feature Effects
+![Logistic Regression Coefficients](evaluation/log_reg_coefficients.png)
+
+## Local Setup & Usage
+
+1. **Clone the repository:**
+   ```bash
+   git clone <your-repository-url>
+   cd <repository-folder>
+   ```
+
+2. **Create and activate a virtual environment (optional):**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate        # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Run the Streamlit application:**
+   ```bash
+   streamlit run app.py
+   ```
+
+## Web Application Features
+
+* **Interactive Clinical Inputs:** Enter patient metrics including age, sex, chest pain type, resting blood pressure, cholesterol, fasting blood sugar, resting ECG, max heart rate, exercise-induced angina, ST depression, and ST slope.
+* **Side-by-Side Model Comparison:** View predicted heart disease probabilities and diagnostic classifications simultaneously from both Logistic Regression and Decision Tree models.
+* **Feature Importance Sidebar:** Displays the top clinical drivers influencing Decision Tree predictions alongside an expandable view of the encoded model input vector.
